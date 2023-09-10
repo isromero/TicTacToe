@@ -1,0 +1,111 @@
+html {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  text-align: center;
+  padding: 3rem;
+  font-size: 3em;
+}
+
+.game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.cell {
+  width: 10rem;
+  height: 10rem;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4em;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.choose-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.both-games {
+  display: flex;
+  gap: 2rem;
+}
+
+.bot-difficulty {
+  margin-top: 1rem;
+}
+
+button {
+  height: 3rem;
+  width: 10rem;
+  cursor: pointer;
+  background: #7C4DFF;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-family: Consolas, Courier New, monospace;
+  border: solid #754CFF 1px;
+  font-size: 16px;
+  color: white;
+  -webkit-transition: 500ms;
+  transition: 500ms;
+  border-radius: 5px;
+  background: linear-gradient(145deg, #4A2A99, #360E6F);
+  -webkit-box-shadow: -1px -5px 15px #471C8B, 
+               5px  5px 15px #471C8B, 
+    inset      5px  5px 10px #360E6F, 
+    inset     -5px -5px 10px #360E6F;
+  box-shadow: -1px -5px 15px #471C8B, 
+               5px  5px 15px #471C8B, 
+    inset      5px  5px 10px #360E6F, 
+    inset     -5px -5px 10px #360E6F;
+}
+
+
+button:hover {
+  -webkit-box-shadow: 1px 1px 13px #300A67,
+                    -1px -1px 13px #4A2A99;
+  box-shadow: 1px 1px 13px #300A67,
+             -1px -1px 13px #4A2A99;
+  color: #d6d6d6;
+  -webkit-transition: 500ms;
+  transition: 500ms;
+}
+
+button:active {
+  -webkit-box-shadow: 1px 1px 13px #300A67,
+                     -1px -1px 33px #4A2A99;
+  box-shadow: 1px 1px 13px #300A67,
+             -1px -1px 33px #4A2A99;
+  color: #d6d6d6;
+  -webkit-transition: 100ms;
+  transition: 100ms;
+}
