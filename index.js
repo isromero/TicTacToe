@@ -29,26 +29,23 @@ const PlayerVsBot = () => {
   const botEasy = () => {
     cells.forEach((cell) => {
       cell.addEventListener('click', () => {
-        let dataIndex = cell.getAttribute('data-index');
-        if (cell.textContent === '' && !isWinner(dataIndex)) {
+        if (cell.textContent === '' && !isWinner()) {
           cell.textContent = 'X';
           cell.style.pointerEvents = 'none';
-          if (isWinner(dataIndex) == 'X' || isWinner(dataIndex) == 'O' || isWinner(dataIndex) == 'tie') {
-            displayWinner(isWinner(dataIndex));
+          if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
+            displayWinner(isWinner());
+            return ;
           }
-        } else {
-          displayWinner(isWinner(dataIndex));
         }
         const emptyCells = Array.from(cells).filter((cell) => cell.textContent === '');
         if (emptyCells.length > 0) {
           const randomIndex = Math.floor(Math.random() * emptyCells.length);
           const randomCell = emptyCells[randomIndex];
-          const dataIndexBot = randomCell.getAttribute('data-index');
           randomCell.textContent = 'O';
           randomCell.style.pointerEvents = 'none';
-
-          if (isWinner(dataIndexBot) == 'X' || isWinner(dataIndexBot) == 'O' || isWinner(dataIndexBot) == 'tie') {
-            displayWinner(isWinner(dataIndexBot));
+          if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
+            displayWinner(isWinner());
+            return ;
           }
         }
       })
@@ -61,23 +58,22 @@ const PlayerVsPlayer = () => {
 
   cells.forEach((cell) => {
     cell.addEventListener('click', () => {
-      let dataIndex = cell.getAttribute('data-index');
-      if (cell.textContent === '' && !isWinner(dataIndex)) {
+      if (cell.textContent === '' && !isWinner()) {
         cell.textContent = currentPlayer;
         cell.style.pointerEvents = 'none';
-        if (isWinner(dataIndex) == 'X' || isWinner(dataIndex) == 'O' || isWinner(dataIndex) == 'tie') {
-          displayWinner(isWinner(dataIndex));
+        if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
+          displayWinner(isWinner());
         } else {
           currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
         }
       } else {
-        displayWinner(isWinner(dataIndex));
+        displayWinner(isWinner());
       }
     })
   })
 }
 
-const isWinner = (dataIndex) => {
+const isWinner = () => {
   const cellElements = [...cells];
   const winningCombinations = [
     /* Rows */
@@ -92,7 +88,8 @@ const isWinner = (dataIndex) => {
     [1, 5, 9],
     [3, 5, 7],
   ];
-  let index = parseInt(dataIndex);
+
+  let result = 0;
 
   for (const win of winningCombinations) {
     const [a, b, c] = win;
@@ -101,22 +98,21 @@ const isWinner = (dataIndex) => {
     const cell3 = document.querySelector(`.cell[data-index='${c}']`);
 
     if (
-      win.includes(index) &&
       cell1.textContent !== '' &&
       cell1.textContent === cell2.textContent &&
       cell2.textContent === cell3.textContent
     ) {
-      return cell1.textContent;
-    } else {
-      const allCellsFilled = cellElements.every((cell) => cell.textContent !== '');
-      if (allCellsFilled) {
-        return 'tie'
-      } else {
-        return 0;
-      }
+      result = cell1.textContent;
+      break;
     }
   }
+  const allCellsFilled = cellElements.every((cell) => cell.textContent !== '');
+  if (result === 0 && allCellsFilled) {
+    result = 'tie';
+  }
+  return result;
 }
+
 
 const displayWinner = (winner) => {
   const displayWinner = document.createElement('div');
