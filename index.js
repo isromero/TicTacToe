@@ -15,6 +15,11 @@ const winningCombinations = [
   [1, 5, 9],
   [3, 5, 7],
 ];
+const matrix = [
+  ['', '', ''],
+  ['', '', ''],
+  ['', '', '']
+]
 
 vsPlayerButton.addEventListener('click', () => {
   vsPlayerButton.style.pointerEvents = 'none';
@@ -28,26 +33,70 @@ vsBotButton.addEventListener('click', () => {
 const PlayerVsBot = () => {
   const easyDifficulty = document.querySelector('.easy');
   const mediumDifficulty = document.querySelector('.medium');
-  const hardDifficulty = document.querySelector('.hard');
+  const invencibleDifficulty = document.querySelector('.invencible');
 
-  /* const isGoingToWinPlayer = () => {
-    for (const win of winningCombinations) {
-      const [a, b, c] = win;
-      const cell1 = document.querySelector(`.cell[data-index='${a}']`);
-      const cell2 = document.querySelector(`.cell[data-index='${b}']`);
-      const cell3 = document.querySelector(`.cell[data-index='${c}']`);
-      
-      if ((cell1.textContent === '') && (cell2.textContent === 'X' && cell3.textContent === 'X')) {
-        return 1;
-      } else if ((cell2.textContent === '') && (cell1.textContent === 'X' && cell3.textContent === 'X')) {
-        return 1;
-      } else if((cell3.textContent === '') && (cell1.textContent === 'X' && cell2.textContent === 'X')) {
-        return 1;
-      } else {
-        return 0;
+  const minimax = (depth, isMaximizing, alpha, beta) => {
+    if (depth >= 9 || isWinner() == 0) {
+      return matrix;
+    }
+
+    if (isMaximizing) {
+      let maxEval = -Infinity;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (matrix[i][j] === '') {
+            matrix[i][j] = 'O';
+            const eval = minimax(depth + 1, false, alpha, beta);
+            matrix[i][j] = '';
+            maxEval = Math.max(maxEval, eval);
+            alpha = Math.max(alpha, eval);
+            if (beta <= alpha) {
+              break ;
+            }
+          }
+        }
+      }
+      return maxEval;
+    } else {
+      let minEval = Infinity;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (matrix[i][j] === '') {
+            matrix[i][j] = 'O';
+            const eval = minimax(depth + 1, false, alpha, beta);
+            matrix[i][j] = '';
+            maxEval = Math.max(maxEval, eval);
+            alpha = Math.max(alpha, eval);
+            if (beta <= alpha) {
+              break ;
+            }
+          }
+        }
+      }
+      return minEval;
+    }
+  }
+
+  const getBestMove = (matrix) => {
+    let bestMove = { row: -1, col: -1 };
+    let bestEval = -Infinity;
+
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (matrix[i][j] === '') {
+          matrix[i][j] = 'O';
+          const eval = minimax(0, false, -Infinity, Infinity);
+          matrix[i][j] = '';
+          if (eval > bestEval) {
+            bestEval = eval;
+            bestMove.row = i;
+            bestMove.col = j;
+          }
+        }
       }
     }
-  } */
+    return bestMove;
+  }
 
   const indexToBlock = () => {
     let index = 0;
@@ -97,16 +146,20 @@ const PlayerVsBot = () => {
   mediumDifficulty.addEventListener('click', () => {
     botMedium();
   });
-  /* hardDifficulty.addEventListener('click', () => {
+  /* invencibleDifficulty.addEventListener('click', () => {
     botHard();
   })
  */
   const botEasy = () => {
     cells.forEach((cell) => {
+      const index = Array.from(cells).indexOf(cell);
+      const rowIndex = Math.floor(index / 3);
+      const colIndex = index % 3;
       cell.addEventListener('click', () => {
         if (cell.textContent === '' && !isWinner()) {
           cell.textContent = 'X';
           cell.style.pointerEvents = 'none';
+          matrix[rowIndex][colIndex] = 'X';
           if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
             displayWinner(isWinner());
             return ;
@@ -118,6 +171,12 @@ const PlayerVsBot = () => {
           const randomCell = emptyCells[randomIndex];
           randomCell.textContent = 'O';
           randomCell.style.pointerEvents = 'none';
+          
+          const randomCellIndex = Array.from(cells).indexOf(randomCell);
+          const randomCellRowIndex = Math.floor(randomCellIndex / 3);
+          const randomCellColIndex = randomCellIndex % 3;
+          
+          matrix[randomCellRowIndex][randomCellColIndex] = 'O';
           if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
             displayWinner(isWinner());
             return ;
@@ -129,10 +188,14 @@ const PlayerVsBot = () => {
 
   const botMedium = () => {
     cells.forEach((cell) => {
+      const index = Array.from(cells).indexOf(cell);
+      const rowIndex = Math.floor(index / 3);
+      const colIndex = index % 3;
       cell.addEventListener('click', () => {
         if (cell.textContent === '' && !isWinner()) {
           cell.textContent = 'X';
           cell.style.pointerEvents = 'none';
+          matrix[rowIndex][colIndex] = 'X';
           if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
             displayWinner(isWinner());
             return;
@@ -152,6 +215,50 @@ const PlayerVsBot = () => {
           const cellToFill = document.querySelector(`.cell[data-index='${index}']`);
           cellToFill.textContent = 'O';
           cellToFill.style.pointerEvents = 'none';
+          
+          const randomCellIndex = Array.from(cells).indexOf(randomCell);
+          const randomCellRowIndex = Math.floor(randomCellIndex / 3);
+          const randomCellColIndex = randomCellIndex % 3;
+          
+          matrix[randomCellRowIndex][randomCellColIndex] = 'O';
+          if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
+            displayWinner(isWinner());
+          }
+        }
+      })
+    })
+  }
+  
+  /* Añadir matriz de row index y col index para poder hacer algoritmo más cómodo */
+  const botHard = () => {
+    cells.forEach((cell) => {
+      const index = Array.from(cells).indexOf(cell);
+      const rowIndex = Math.floor(index / 3);
+      const colIndex = index % 3;
+      cell.addEventListener('click', () => {
+        if (cell.textContent === '' && !isWinner()) {
+          cell.textContent = 'X';
+          cell.style.pointerEvents = 'none';
+          matrix[rowIndex][colIndex] = 'X';
+          if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
+            displayWinner(isWinner());
+            return;
+          }
+        }
+        const emptyCells = Array.from(cells).filter((cell) => cell.textContent === '');
+        if (emptyCells.length > 0) {
+          let index = indexToWin();
+
+          if (!index) {
+            index = indexToBlock();
+          }
+          if (!index) {
+            matrix = getBestMove();
+          }
+          const cellToFill = document.querySelector(`.cell[data-index='${index}']`);
+          cellToFill.textContent = 'O';
+          cellToFill.style.pointerEvents = 'none';
+          matrix[rowIndex][colIndex] = 'O';
           if (isWinner() == 'X' || isWinner() == 'O' || isWinner() == 'tie') {
             displayWinner(isWinner());
           }
