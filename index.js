@@ -15,7 +15,7 @@ const winningCombinations = [
   [1, 5, 9],
   [3, 5, 7],
 ];
-const matrix = [
+let matrix = [
   ['', '', ''],
   ['', '', ''],
   ['', '', '']
@@ -36,12 +36,20 @@ const PlayerVsBot = () => {
   const invencibleDifficulty = document.querySelector('.invencible');
 
   const minimax = (depth, isMaximizing, alpha, beta) => {
-    if (depth >= 9 || isWinner() == 0) {
-      return matrix;
+    let maxEval, minEval;
+  
+    if (depth >= 9 || isWinner() !== 0) {
+      if (isWinner() === 'O') {
+        return 1; // 'O' gana
+      } else if (isWinner() === 'X') {
+        return -1; // 'X' gana
+      } else {
+        return 0; // Empate
+      }
     }
-
+  
     if (isMaximizing) {
-      let maxEval = -Infinity;
+      maxEval = -Infinity;
       for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
           if (matrix[i][j] === '') {
@@ -51,33 +59,33 @@ const PlayerVsBot = () => {
             maxEval = Math.max(maxEval, eval);
             alpha = Math.max(alpha, eval);
             if (beta <= alpha) {
-              break ;
+              break;
             }
           }
         }
       }
       return maxEval;
     } else {
-      let minEval = Infinity;
+      minEval = Infinity;
       for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
           if (matrix[i][j] === '') {
-            matrix[i][j] = 'O';
-            const eval = minimax(depth + 1, false, alpha, beta);
+            matrix[i][j] = 'X';
+            const eval = minimax(depth + 1, true, alpha, beta);
             matrix[i][j] = '';
-            maxEval = Math.max(maxEval, eval);
-            alpha = Math.max(alpha, eval);
+            minEval = Math.min(minEval, eval);
+            beta = Math.min(beta, eval);
             if (beta <= alpha) {
-              break ;
+              break;
             }
           }
         }
       }
       return minEval;
     }
-  }
+  }  
 
-  const getBestMove = (matrix) => {
+  const getBestMove = () => {
     let bestMove = { row: -1, col: -1 };
     let bestEval = -Infinity;
 
@@ -94,6 +102,12 @@ const PlayerVsBot = () => {
           }
         }
       }
+    }
+    if (bestMove.row !== -1 && bestMove.col !== -1) {
+      matrix[bestMove.row][bestMove.col] = 'O';
+      const index = bestMove.row * 3 + bestMove.col;
+      cells[index].textContent = 'O';
+      cells[index].style.pointerEvents = 'none';
     }
     return bestMove;
   }
@@ -146,10 +160,10 @@ const PlayerVsBot = () => {
   mediumDifficulty.addEventListener('click', () => {
     botMedium();
   });
-  /* invencibleDifficulty.addEventListener('click', () => {
-    botHard();
+  invencibleDifficulty.addEventListener('click', () => {
+    botImpossible();
   })
- */
+
   const botEasy = () => {
     cells.forEach((cell) => {
       const index = Array.from(cells).indexOf(cell);
@@ -230,7 +244,7 @@ const PlayerVsBot = () => {
   }
   
   /* Añadir matriz de row index y col index para poder hacer algoritmo más cómodo */
-  const botHard = () => {
+  const botImpossible = () => {
     cells.forEach((cell) => {
       const index = Array.from(cells).indexOf(cell);
       const rowIndex = Math.floor(index / 3);
@@ -253,7 +267,10 @@ const PlayerVsBot = () => {
             index = indexToBlock();
           }
           if (!index) {
-            matrix = getBestMove();
+            const bestMove = getBestMove();
+            const rowBestMove = bestMove.row;
+            const colBestMove = bestMove.col;
+            index = rowBestMove * 3 + colBestMove;
           }
           const cellToFill = document.querySelector(`.cell[data-index='${index}']`);
           cellToFill.textContent = 'O';
